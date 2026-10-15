@@ -2,34 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Clipboard slots</title>
+<title>Ctrl Slot</title>
 <style>
   :root {
-    --bg: #14181f; --row: #1c222c; --text: #e6edf5; --muted: #7b8798;
-    --key: #2a323f; --keyedge: #0d1015; --accent: #5fd4c4;
+    --bg: #141416;
+    --border: #242428;
+    --row: #1a1a1e;
+    --row-active: #222227;
+    --text: #eaeaea;
+    --muted: #6a6a72;
+    --num: #8e8e96;
+    --num-border: #323238;
+    --active-num-bg: #e2e2e6;
+    --active-num-text: #121214;
   }
-  html, body { margin: 0; background: transparent; overflow: hidden; }
-  body { font: 14px/1.3 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; color: var(--text); }
-  .panel { margin: 6px; padding: 12px; background: var(--bg); border-radius: 14px; }
-  header { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px 10px; }
-  header b { font-weight: 600; font-size: 15px; }
-  header span { color: var(--muted); font-size: 12px; }
-  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-  li { display: flex; align-items: center; gap: 10px; padding: 6px 8px; background: var(--row); border-radius: 8px; min-height: 24px; }
-  .cap { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 6px;
-         background: var(--key); box-shadow: 0 2px 0 var(--keyedge); font-weight: 600; font-size: 13px; }
-  .txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  li.empty .txt { color: var(--muted); }
-  li.next .cap { background: var(--accent); color: #0a1512; }
-  li.next { outline: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); }
-  .panel.off { opacity: .6; }
-  .panel.off li.next { outline: none; }
-  .panel.off li.next .cap { background: var(--key); color: var(--text); }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    user-select: none;
+  }
+
+  .panel {
+    margin: 8px;
+    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  header .title {
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+
+  header .status {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    background: var(--row);
+    border: 1px solid transparent;
+    border-radius: 5px;
+    min-height: 28px;
+  }
+
+  .cap {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    background: transparent;
+    border: 1px solid var(--num-border);
+    color: var(--num);
+  }
+
+  .txt {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  li.empty .txt {
+    color: var(--muted);
+  }
+
+  li.next {
+    background: var(--row-active);
+    border-color: #33333a;
+  }
+
+  li.next .cap {
+    background: var(--active-num-bg);
+    border-color: var(--active-num-bg);
+    color: var(--active-num-text);
+  }
+
+  .panel.off {
+    opacity: 0.45;
+  }
+
+  .panel.off li.next {
+    border-color: transparent;
+    background: var(--row);
+  }
+
+  .panel.off li.next .cap {
+    background: transparent;
+    border-color: var(--num-border);
+    color: var(--num);
+  }
 </style>
 </head>
 <body>
 <div class="panel" id="panel">
-  <header><b>Clipboard slots</b><span id="status">Loading</span></header>
+  <header>
+    <span class="title">Ctrl Slot</span>
+    <span class="status" id="status">Active</span>
+  </header>
   <ul id="list"></ul>
 </div>
 <script>
@@ -39,12 +155,15 @@
 
   function render(s) {
     panel.classList.toggle('off', !s.enabled);
-    status.textContent = s.enabled ? 'On' : 'Paused';
+    status.textContent = s.enabled ? 'Active' : 'Paused';
     list.innerHTML = '';
     s.slots.forEach((t, i) => {
       const li = document.createElement('li');
-      const cap = document.createElement('span'); cap.className = 'cap'; cap.textContent = i + 1;
-      const txt = document.createElement('span'); txt.className = 'txt';
+      const cap = document.createElement('span');
+      cap.className = 'cap';
+      cap.textContent = i + 1;
+      const txt = document.createElement('span');
+      txt.className = 'txt';
       txt.textContent = t ? t.replace(/\s+/g, ' ') : 'Empty';
       if (!t) li.classList.add('empty');
       if (i === s.next) li.classList.add('next');
@@ -53,10 +172,10 @@
     });
   }
 
-  const { invoke } = window.__TAURI__.core;
-  const { listen } = window.__TAURI__.event;
-  listen('slots', e => render(e.payload));
-  invoke('get_state').then(render);
+  if (window.api) {
+    window.api.onSlotsUpdate(render);
+    window.api.getState().then(render);
+  }
 </script>
 </body>
 </html>

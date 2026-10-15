@@ -1,7 +1,63 @@
 {
-  "name": "numpad-clipboard",
-  "private": true,
+  "name": "ctrl-slot",
+  "productName": "Ctrl Slot",
+  "description": "Minimalist Clipboard Manager for Windows",
   "version": "0.1.0",
-  "scripts": { "tauri": "tauri" },
-  "devDependencies": { "@tauri-apps/cli": "^2" }
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.ctrlslot.app",
+    "productName": "Ctrl Slot",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "icon.ico",
+      "icon.png",
+      "src/**/*"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/koffi/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Ctrl Slot"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.7.2",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "koffi": "^3.3.3"
+  }
 }
