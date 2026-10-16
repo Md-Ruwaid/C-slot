@@ -1,181 +1,23 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Ctrl Slot</title>
-<style>
-  :root {
-    --bg: #141416;
-    --border: #242428;
-    --row: #1a1a1e;
-    --row-active: #222227;
-    --text: #eaeaea;
-    --muted: #6a6a72;
-    --num: #8e8e96;
-    --num-border: #323238;
-    --active-num-bg: #e2e2e6;
-    --active-num-text: #121214;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    overflow: hidden;
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    user-select: none;
-  }
-
-  .panel {
-    margin: 8px;
-    padding: 12px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-  }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 8px;
-  }
-
-  header .title {
-    font-weight: 500;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--muted);
-  }
-
-  header .status {
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 8px;
-    background: var(--row);
-    border: 1px solid transparent;
-    border-radius: 5px;
-    min-height: 28px;
-  }
-
-  .cap {
-    flex: none;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 600;
-    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-    background: transparent;
-    border: 1px solid var(--num-border);
-    color: var(--num);
-  }
-
-  .txt {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 12px;
-    color: var(--text);
-  }
-
-  li.empty .txt {
-    color: var(--muted);
-  }
-
-  li.next {
-    background: var(--row-active);
-    border-color: #33333a;
-  }
-
-  li.next .cap {
-    background: var(--active-num-bg);
-    border-color: var(--active-num-bg);
-    color: var(--active-num-text);
-  }
-
-  .panel.off {
-    opacity: 0.45;
-  }
-
-  .panel.off li.next {
-    border-color: transparent;
-    background: var(--row);
-  }
-
-  .panel.off li.next .cap {
-    background: transparent;
-    border-color: var(--num-border);
-    color: var(--num);
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C-Slot</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="panel" id="panel">
-  <header>
-    <span class="title">Ctrl Slot</span>
-    <span class="status" id="status">Active</span>
-  </header>
-  <ul id="list"></ul>
-</div>
-<script>
-  const list = document.getElementById('list');
-  const panel = document.getElementById('panel');
-  const status = document.getElementById('status');
+  <div class="panel" id="panel">
+    <header>
+      <div class="brand">
+        <img class="logo" src="../icon.png" alt="C-Slot logo">
+        <span class="title">C-Slot</span>
+      </div>
+      <span class="status" id="status">Active</span>
+    </header>
+    <ul id="list"></ul>
+  </div>
 
-  function render(s) {
-    panel.classList.toggle('off', !s.enabled);
-    status.textContent = s.enabled ? 'Active' : 'Paused';
-    list.innerHTML = '';
-    s.slots.forEach((t, i) => {
-      const li = document.createElement('li');
-      const cap = document.createElement('span');
-      cap.className = 'cap';
-      cap.textContent = i + 1;
-      const txt = document.createElement('span');
-      txt.className = 'txt';
-      txt.textContent = t ? t.replace(/\s+/g, ' ') : 'Empty';
-      if (!t) li.classList.add('empty');
-      if (i === s.next) li.classList.add('next');
-      li.append(cap, txt);
-      list.append(li);
-    });
-  }
-
-  if (window.api) {
-    window.api.onSlotsUpdate(render);
-    window.api.getState().then(render);
-  }
-</script>
+  <script src="renderer.js"></script>
 </body>
 </html>
