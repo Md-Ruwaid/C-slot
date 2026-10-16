@@ -1,4 +1,4 @@
-# Ctrl Slot
+# C-Slot
 
 Copy things as usual (Ctrl+C / Ctrl+X). Each new copy fills the next slot, 1 through 9.
 Press **Ctrl + 1–9** (or **Ctrl + Numpad 1–9**) to paste that slot. The 10th copy replaces slot 1.
@@ -20,7 +20,7 @@ memory only and are gone when you quit.
 npm run dist
 ```
 This generates two Windows executables in the `dist/` folder:
-- **`Ctrl Slot-Portable.exe`**: Standalone single executable (no installation needed).
-- **`Ctrl Slot Setup 0.1.0.exe`**: Standard installer wizard (Start Menu shortcut & uninstaller).
+- **`C-Slot-Portable.exe`**: Standalone single executable (no installation needed).
+- **`C-Slot Setup 0.1.0.exe`**: Standard installer wizard (Start Menu shortcut & uninstaller).
 
 

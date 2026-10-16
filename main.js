@@ -2,10 +2,7 @@ const { app, BrowserWindow, globalShortcut, clipboard, Tray, Menu, ipcMain, scre
 const path = require('path');
 const koffi = require('koffi');
 
-// ==========================================
-// Windows Native Keystroke Simulation (koffi)
-// ==========================================
-// Calls user32.dll directly in-process for instant (<0.05ms) paste response.
+// Windows native keystroke simulation via user32.dll
 const user32 = koffi.load('user32.dll');
 const keybd_event = user32.func('void __stdcall keybd_event(uint8 bVk, uint8 bScan, uint32 dwFlags, uintptr_t dwExtraInfo)');
 const GetAsyncKeyState = user32.func('int16 __stdcall GetAsyncKeyState(int32 vKey)');
@@ -15,17 +12,14 @@ const VK_V = 0x56;
 const KEYEVENTF_KEYUP = 0x0002;
 
 function simulatePaste() {
-  // Check if the user is physically holding the Ctrl key right now
   const isCtrlHeld = (GetAsyncKeyState(VK_CONTROL) & 0x8000) !== 0;
 
   if (isCtrlHeld) {
-    // CRITICAL FIX: If user is physically holding Ctrl, do NOT release or re-press Ctrl!
-    // Releasing Ctrl virtually destroys Windows modifier state for chained shortcuts (e.g. Ctrl+1, 2, 4, 3).
-    // We only simulate tapping 'V'.
+    // If Ctrl is physically held down, tap V only (keeps modifier state intact for rapid chaining)
     keybd_event(VK_V, 0, 0, 0);
     keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0);
   } else {
-    // User released Ctrl very quickly; simulate complete Ctrl+V sequence
+    // Ctrl was released quickly; simulate a full Ctrl+V press and release
     keybd_event(VK_CONTROL, 0, 0, 0);
     keybd_event(VK_V, 0, 0, 0);
     keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0);
@@ -33,21 +27,19 @@ function simulatePaste() {
   }
 }
 
-// ==========================================
 // Application State
-// ==========================================
-const N = 9;
-let slots = Array(N).fill(null);
-let next = 0;              // Next slot index to fill (0-8)
-let lastSeen = '';         // Last clipboard text seen (prevents self-looping)
-let enabled = true;        // Master toggle for hotkeys and watching
+const SLOT_COUNT = 9;
+let slots = Array(SLOT_COUNT).fill(null);
+let next = 0;
+let lastSeen = '';
+let enabled = true;
 
 let overlayWindow = null;
 let tray = null;
 let hideTimer = null;
 let watcherInterval = null;
 
-// Paste session state (prevents timer collisions during rapid pastes)
+// Paste session state
 let isPasting = false;
 let restoreTimer = null;
 let sessionOriginalClipboard = null;
@@ -60,9 +52,7 @@ function getSnapshot() {
   };
 }
 
-// ==========================================
 // Window & Popup Management
-// ==========================================
 function positionOverlay() {
   if (!overlayWindow || overlayWindow.isDestroyed()) return;
   const primaryDisplay = screen.getPrimaryDisplay();
@@ -70,7 +60,7 @@ function positionOverlay() {
   const width = 300;
   const height = 372;
 
-  // Dock to bottom-right corner, respecting Windows taskbar
+  // Dock to bottom-right corner above taskbar
   const x = workArea.x + workArea.width - width - 24;
   const y = workArea.y + workArea.height - height - 24;
   overlayWindow.setBounds({ x, y, width, height });
@@ -80,7 +70,7 @@ function showPopup() {
   if (!overlayWindow || overlayWindow.isDestroyed()) return;
   positionOverlay();
 
-  // showInactive prevents stealing focus from the active window/cursor
+  // Show without stealing focus from the active window
   overlayWindow.showInactive();
 
   if (hideTimer) clearTimeout(hideTimer);
@@ -98,9 +88,7 @@ function notify() {
   showPopup();
 }
 
-// ==========================================
 // Actions & Core Logic
-// ==========================================
 function setEnabled(on) {
   enabled = on;
   registerSlotShortcuts(on);
@@ -116,7 +104,7 @@ function setEnabled(on) {
 }
 
 function clearSlots() {
-  slots = Array(N).fill(null);
+  slots = Array(SLOT_COUNT).fill(null);
   next = 0;
   notify();
 }
@@ -124,7 +112,6 @@ function clearSlots() {
 async function pasteSlot(idx) {
   const text = slots[idx];
 
-  // If slot is empty, immediately show overlay so user gets visual feedback
   if (!text) {
     showPopup();
     return;
@@ -132,13 +119,11 @@ async function pasteSlot(idx) {
 
   isPasting = true;
 
-  // Cancel any existing restore timer from a rapid previous paste
   if (restoreTimer) {
     clearTimeout(restoreTimer);
     restoreTimer = null;
   }
 
-  // Save the original clipboard once per paste session
   if (sessionOriginalClipboard === null) {
     try {
       const current = await clipboard.readText();
@@ -146,19 +131,17 @@ async function pasteSlot(idx) {
         sessionOriginalClipboard = current;
       }
     } catch {
-      // Ignored if clipboard is locked
+      // Ignored if clipboard is locked by another app
     }
   }
 
-  // Set clipboard to the selected slot
   lastSeen = text;
   clipboard.writeText(text);
 
-  // Wait 35ms then trigger V
   setTimeout(() => {
     simulatePaste();
 
-    // Debounce restore: wait 350ms of quiet time after the LAST paste before restoring
+    // Debounce restore: wait for quiet time after rapid pastes
     if (restoreTimer) clearTimeout(restoreTimer);
     restoreTimer = setTimeout(async () => {
       if (sessionOriginalClipboard !== null) {
@@ -172,9 +155,7 @@ async function pasteSlot(idx) {
   }, 35);
 }
 
-// ==========================================
-// Global Shortcuts (Supports both Numpad & Top Number Row)
-// ==========================================
+// Global Shortcuts (both Numpad and Top Number row)
 const SLOT_SHORTCUTS = [
   ['Control+num1', 'Control+1'],
   ['Control+num2', 'Control+2'],
@@ -204,7 +185,7 @@ function registerSlotShortcuts(active) {
 }
 
 function registerGlobalHotkeys() {
-  // Toggle enabled on/off (supports Ctrl+Alt+0 and Ctrl+Alt+Numpad0)
+  // Toggle enabled on/off
   ['Control+Alt+num0', 'Control+Alt+0'].forEach((sc) => {
     if (!globalShortcut.isRegistered(sc)) {
       globalShortcut.register(sc, () => {
@@ -213,7 +194,7 @@ function registerGlobalHotkeys() {
     }
   });
 
-  // Clear all slots (supports Ctrl+Alt+. and Ctrl+Alt+Numpad.)
+  // Clear all slots
   ['Control+Alt+numdec', 'Control+Alt+.'].forEach((sc) => {
     if (!globalShortcut.isRegistered(sc)) {
       globalShortcut.register(sc, () => {
@@ -222,20 +203,16 @@ function registerGlobalHotkeys() {
     }
   });
 
-  // Register slot paste shortcuts if enabled
   registerSlotShortcuts(enabled);
 }
 
-// ==========================================
 // Clipboard Watcher
-// ==========================================
 function startClipboardWatcher() {
   clipboard.readText().then((txt) => {
     if (txt) lastSeen = txt;
   });
 
   watcherInterval = setInterval(async () => {
-    // Ignore watcher while app is disabled or actively performing a paste sequence
     if (!enabled || isPasting) return;
 
     try {
@@ -244,18 +221,16 @@ function startClipboardWatcher() {
 
       lastSeen = text;
       slots[next] = text;
-      next = (next + 1) % N; // 10th copy replaces slot 1
+      next = (next + 1) % SLOT_COUNT;
 
       notify();
     } catch {
-      // Ignored: clipboard temporarily locked by another process
+      // Ignored if clipboard is momentarily locked by another process
     }
   }, 150);
 }
 
-// ==========================================
 // System Tray
-// ==========================================
 function updateTrayMenu() {
   if (!tray) return;
 
@@ -287,9 +262,7 @@ function updateTrayMenu() {
   tray.setContextMenu(contextMenu);
 }
 
-// ==========================================
 // Window Lifecycle
-// ==========================================
 function createWindow() {
   overlayWindow = new BrowserWindow({
     width: 300,
@@ -301,7 +274,7 @@ function createWindow() {
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
-    focusable: false, // Ensures typing focus stays with user's active window
+    focusable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -319,7 +292,7 @@ function createWindow() {
   });
 }
 
-// Single-instance lock
+// Single instance lock
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
@@ -335,7 +308,7 @@ if (!gotTheLock) {
 
     const iconPath = path.join(__dirname, 'icon.ico');
     tray = new Tray(iconPath);
-    tray.setToolTip('Ctrl Slot');
+    tray.setToolTip('C-Slot');
     tray.on('click', () => notify());
     updateTrayMenu();
 

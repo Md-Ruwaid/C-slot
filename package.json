@@ -1,6 +1,6 @@
 {
-  "name": "ctrl-slot",
-  "productName": "Ctrl Slot",
+  "name": "c-slot",
+  "productName": "C-Slot",
   "description": "Minimalist Clipboard Manager for Windows",
   "version": "0.1.0",
   "main": "main.js",
@@ -9,8 +9,8 @@
     "dist": "electron-builder --win"
   },
   "build": {
-    "appId": "com.ctrlslot.app",
-    "productName": "Ctrl Slot",
+    "appId": "com.cslot.app",
+    "productName": "C-Slot",
     "directories": {
       "output": "dist"
     },
@@ -47,7 +47,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Ctrl Slot"
+      "shortcutName": "C-Slot"
     },
     "portable": {
       "artifactName": "${productName}-Portable.${ext}"
