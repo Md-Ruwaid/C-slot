@@ -236,49 +236,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const isLocalServer = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const isFileProtocol = window.location.protocol === 'file:';
 
-  function initiateDownload(type) {
-    let downloadUrl = '';
-    const filename = type === 'setup' ? 'Ctrl-Slot-Setup-0.1.0.exe' : 'Ctrl-Slot-Portable.exe';
+  const GITHUB_SETUP_URL = 'https://github.com/Md-Ruwaid/C-slot/releases/download/v0.1.0/Ctrl-Slot-Setup-0.1.0.exe';
+  const GITHUB_PORTABLE_URL = 'https://github.com/Md-Ruwaid/C-slot/releases/download/v0.1.0/Ctrl-Slot-Portable.exe';
 
+  function handleDownloadClick(e, type) {
     if (isLocalServer) {
-      // Direct streaming from our server.js
-      downloadUrl = type === 'setup' ? '/download/setup' : '/download/portable';
+      // Local streaming from server.js
+      e.preventDefault();
+      const localUrl = type === 'setup' ? '/download/setup' : '/download/portable';
+      const a = document.createElement('a');
+      a.href = localUrl;
+      a.download = type === 'setup' ? 'Ctrl-Slot-Setup-0.1.0.exe' : 'Ctrl-Slot-Portable.exe';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } else if (isFileProtocol) {
-      // Direct relative link if opened directly from filesystem
-      downloadUrl = type === 'setup' 
-        ? '../dist/Ctrl Slot Setup 0.1.0.exe' 
-        : '../dist/Ctrl Slot-Portable.exe';
-    } else {
-      // Production fallback to GitHub Releases
-      downloadUrl = type === 'setup'
-        ? 'https://github.com/Md-Ruwaid/Ctrl-slot/releases/download/v0.1.0/Ctrl.Slot.Setup.0.1.0.exe'
-        : 'https://github.com/Md-Ruwaid/Ctrl-slot/releases/download/v0.1.0/Ctrl-Slot-Portable.exe';
+      e.preventDefault();
+      const relUrl = type === 'setup' ? '../dist/Ctrl Slot Setup 0.1.0.exe' : '../dist/Ctrl Slot-Portable.exe';
+      const a = document.createElement('a');
+      a.href = relUrl;
+      a.download = type === 'setup' ? 'Ctrl-Slot-Setup-0.1.0.exe' : 'Ctrl-Slot-Portable.exe';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
+    // On Vercel / Web, allow native browser navigation to trigger file download directly from GitHub Releases
 
-    // Trigger browser download via invisible anchor
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = filename;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Open download help modal
     openDownloadModal(type);
   }
 
   downloadSetupBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      initiateDownload('setup');
+      handleDownloadClick(e, 'setup');
     });
   });
 
   downloadPortableBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      initiateDownload('portable');
+      handleDownloadClick(e, 'portable');
     });
   });
 
@@ -288,10 +283,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function openDownloadModal(type) {
     if (!dlModal) return;
     const modalType = document.getElementById('modalDlType');
+    const modalRetry = document.getElementById('modalRetryLink');
     if (modalType) {
       modalType.textContent = type === 'setup' 
         ? 'C-Slot Setup 0.1.0 (Installer)' 
         : 'C-Slot Portable 0.1.0';
+    }
+    if (modalRetry) {
+      modalRetry.href = type === 'setup' ? GITHUB_SETUP_URL : GITHUB_PORTABLE_URL;
+      modalRetry.download = type === 'setup' ? 'Ctrl-Slot-Setup-0.1.0.exe' : 'Ctrl-Slot-Portable.exe';
     }
     dlModal.classList.add('active');
   }
