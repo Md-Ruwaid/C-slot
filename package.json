@@ -4,9 +4,29 @@
   "description": "Minimalist Clipboard Manager for Windows",
   "version": "0.1.0",
   "main": "main.js",
+  "author": "Md Ruwaid uddin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Md-Ruwaid/Ctrl-slot.git"
+  },
+  "homepage": "https://github.com/Md-Ruwaid/Ctrl-slot#readme",
+  "bugs": {
+    "url": "https://github.com/Md-Ruwaid/Ctrl-slot/issues"
+  },
+  "keywords": [
+    "clipboard",
+    "clipboard-manager",
+    "electron",
+    "windows",
+    "productivity",
+    "hotkeys",
+    "numpad"
+  ],
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win",
+    "web": "node website/server.js"
   },
   "build": {
     "appId": "com.cslot.app",

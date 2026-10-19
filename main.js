@@ -1,5 +1,12 @@
 const { app, BrowserWindow, globalShortcut, clipboard, Tray, Menu, ipcMain, screen } = require('electron');
 const path = require('path');
+
+// Ensure Windows-only execution for native DLL bindings
+if (process.platform !== 'win32') {
+  console.error('C-Slot requires Windows OS.');
+  app.quit();
+}
+
 const koffi = require('koffi');
 
 // Windows native keystroke simulation via user32.dll
@@ -55,12 +62,15 @@ function getSnapshot() {
 // Window & Popup Management
 function positionOverlay() {
   if (!overlayWindow || overlayWindow.isDestroyed()) return;
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { workArea } = primaryDisplay;
+
+  // Multi-monitor support: position on the display where the cursor currently is
+  const cursorPoint = screen.getCursorScreenPoint();
+  const currentDisplay = screen.getDisplayNearestPoint(cursorPoint) || screen.getPrimaryDisplay();
+  const { workArea } = currentDisplay;
   const width = 300;
   const height = 372;
 
-  // Dock to bottom-right corner above taskbar
+  // Dock to bottom-right corner of the active display above the taskbar
   const x = workArea.x + workArea.width - width - 24;
   const y = workArea.y + workArea.height - height - 24;
   overlayWindow.setBounds({ x, y, width, height });
@@ -94,9 +104,12 @@ function setEnabled(on) {
   registerSlotShortcuts(on);
 
   if (on) {
-    clipboard.readText().then((txt) => {
+    try {
+      const txt = clipboard.readText();
       if (txt) lastSeen = txt;
-    });
+    } catch {
+      // Ignored if clipboard is locked
+    }
   }
 
   updateTrayMenu();
@@ -109,7 +122,7 @@ function clearSlots() {
   notify();
 }
 
-async function pasteSlot(idx) {
+function pasteSlot(idx) {
   const text = slots[idx];
 
   if (!text) {
@@ -126,7 +139,7 @@ async function pasteSlot(idx) {
 
   if (sessionOriginalClipboard === null) {
     try {
-      const current = await clipboard.readText();
+      const current = clipboard.readText();
       if (current && !slots.includes(current)) {
         sessionOriginalClipboard = current;
       }
@@ -143,14 +156,19 @@ async function pasteSlot(idx) {
 
     // Debounce restore: wait for quiet time after rapid pastes
     if (restoreTimer) clearTimeout(restoreTimer);
-    restoreTimer = setTimeout(async () => {
-      if (sessionOriginalClipboard !== null) {
-        lastSeen = sessionOriginalClipboard;
-        clipboard.writeText(sessionOriginalClipboard);
-        sessionOriginalClipboard = null;
+    restoreTimer = setTimeout(() => {
+      try {
+        if (sessionOriginalClipboard !== null) {
+          lastSeen = sessionOriginalClipboard;
+          clipboard.writeText(sessionOriginalClipboard);
+          sessionOriginalClipboard = null;
+        }
+      } catch {
+        // Ignored if clipboard write fails
+      } finally {
+        isPasting = false;
+        restoreTimer = null;
       }
-      isPasting = false;
-      restoreTimer = null;
     }, 350);
   }, 35);
 }
@@ -208,15 +226,18 @@ function registerGlobalHotkeys() {
 
 // Clipboard Watcher
 function startClipboardWatcher() {
-  clipboard.readText().then((txt) => {
+  try {
+    const txt = clipboard.readText();
     if (txt) lastSeen = txt;
-  });
+  } catch {
+    // Ignored if clipboard is locked
+  }
 
-  watcherInterval = setInterval(async () => {
+  watcherInterval = setInterval(() => {
     if (!enabled || isPasting) return;
 
     try {
-      const text = await clipboard.readText();
+      const text = clipboard.readText();
       if (!text || text === lastSeen) return;
 
       lastSeen = text;
@@ -282,6 +303,7 @@ function createWindow() {
     }
   });
 
+  overlayWindow.setAlwaysOnTop(true, 'screen-saver');
   overlayWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
 
   overlayWindow.on('close', (e) => {

@@ -36,6 +36,7 @@ body {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 header {
@@ -91,6 +92,7 @@ li {
   border: 1px solid transparent;
   border-radius: 5px;
   min-height: 28px;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .cap {
@@ -107,6 +109,7 @@ li {
   background: transparent;
   border: 1px solid var(--num-border);
   color: var(--num);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .txt {
