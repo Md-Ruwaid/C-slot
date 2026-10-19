@@ -8,11 +8,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Md-Ruwaid/Ctrl-slot.git"
+    "url": "https://github.com/Md-Ruwaid/C-slot.git"
   },
-  "homepage": "https://github.com/Md-Ruwaid/Ctrl-slot#readme",
+  "homepage": "https://github.com/Md-Ruwaid/C-slot#readme",
   "bugs": {
-    "url": "https://github.com/Md-Ruwaid/Ctrl-slot/issues"
+    "url": "https://github.com/Md-Ruwaid/C-slot/issues"
   },
   "keywords": [
     "clipboard",
@@ -26,7 +26,8 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win",
-    "web": "node website/server.js"
+    "web": "node website/server.js",
+    "build": "echo 'Static build ready'"
   },
   "build": {
     "appId": "com.cslot.app",

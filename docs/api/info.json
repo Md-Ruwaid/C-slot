@@ -1,0 +1,14 @@
+{
+  "name": "C-Slot",
+  "version": "0.1.0",
+  "description": "Minimalist Clipboard Manager for Windows",
+  "hasLocalSetup": false,
+  "hasLocalPortable": false,
+  "setupSize": 111627635,
+  "portableSize": 111418633,
+  "githubReleaseUrl": "https://github.com/Md-Ruwaid/C-slot/releases/latest",
+  "githubSetupUrl": "https://github.com/Md-Ruwaid/C-slot/releases/download/v0.1.0/Ctrl.Slot.Setup.0.1.0.exe",
+  "githubPortableUrl": "https://github.com/Md-Ruwaid/C-slot/releases/download/v0.1.0/Ctrl-Slot-Portable.exe",
+  "setupSha256": "246D96D7027B145B03812D2FC829854396C0D27652E7C8582CAC84E564526959",
+  "portableSha256": "91EFAE74F16999FBB1EDD9A508B5B88A41D2F2232A23B6755D9877CA8CCC9A5D"
+}

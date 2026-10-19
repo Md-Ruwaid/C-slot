@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/info",
+      "destination": "/api/info.json"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/download/setup",
+      "destination": "https://github.com/Md-Ruwaid/C-slot/releases/download/v0.1.0/Ctrl.Slot.Setup.0.1.0.exe",
+      "permanent": false
+    },
+    {
+      "source": "/download/portable",
+      "destination": "https://github.com/Md-Ruwaid/C-slot/releases/download/v0.1.0/Ctrl-Slot-Portable.exe",
+      "permanent": false
+    }
+  ]
+}
