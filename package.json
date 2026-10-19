@@ -25,7 +25,8 @@
   ],
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win",
+    "web": "node website/server.js"
   },
   "build": {
     "appId": "com.cslot.app",

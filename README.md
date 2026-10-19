@@ -61,6 +61,13 @@ npm install
 npm start
 ```
 
+### Launch Web Download Portal & Landing Page
+To run the high-performance download portal and interactive HUD sandbox locally:
+```bash
+npm run web
+```
+Then visit [http://localhost:3000](http://localhost:3000) to try the live simulator or download the installer binaries.
+
 ---
 
 ## Build Executable (Production)

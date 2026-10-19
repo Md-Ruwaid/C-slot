@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C-Slot — Minimalist, Ultra-Fast 9-Slot Clipboard Manager for Windows</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="C-Slot is a lightweight Windows productivity utility that turns your clipboard into a 9-slot buffer. Copy with Ctrl+C, paste any slot instantly with Ctrl+1-9 using sub-millisecond native Win32 keystrokes. 100% RAM privacy.">
+  <meta name="keywords" content="clipboard manager, windows clipboard, hotkeys, numpad clipboard, c-slot, ctrl slot, electron clipboard, productivity utility, windows 11 clipboard">
+  <meta name="author" content="Md Ruwaid uddin">
+  <meta name="theme-color" content="#090a0f">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://github.com/Md-Ruwaid/Ctrl-slot">
+  <meta property="og:title" content="C-Slot — Ultra-Fast 9-Slot Clipboard Manager for Windows">
+  <meta property="og:description" content="Copy 9 items in one pass, paste any slot instantly using Ctrl+1-9. Sub-millisecond Win32 keystrokes and 100% RAM privacy.">
+  <meta property="og:image" content="assets/icon.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="C-Slot — Minimalist Clipboard Slot Manager">
+  <meta property="twitter:description" content="Copy consecutively with Ctrl+C. Paste any slot on demand with Ctrl+1–9. Built for Windows 10 & 11.">
+  <meta property="twitter:image" content="assets/icon.png">
+
+  <link rel="icon" type="image/png" href="assets/icon.png">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient Glowing Background Blobs -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+    <div class="ambient-blob blob-3"></div>
+    <div class="ambient-grid"></div>
+  </div>
+
+  <!-- Top Sticky Navigation -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand" aria-label="C-Slot Home">
+        <div class="brand-logo-wrap">
+          <img src="assets/icon.png" alt="C-Slot Logo" class="brand-logo">
+        </div>
+        <span class="brand-text">C-Slot <span class="brand-tag">v0.1.0 Win</span></span>
+      </a>
+
+      <nav aria-label="Primary Navigation">
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#simulator">Live Demo</a></li>
+          <li><a href="#hotkeys">Hotkeys</a></li>
+          <li><a href="#comparison">Why C-Slot</a></li>
+          <li><a href="#downloads">Download</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://github.com/Md-Ruwaid/Ctrl-slot" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" id="navGithubBtn" title="GitHub Repository">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>Star</span>
+        </a>
+
+        <a href="#downloads" class="btn btn-primary" id="navDownloadBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Download .exe</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====================================================================
+         HERO SECTION
+         ==================================================================== -->
+    <section class="hero-section" id="hero">
+      <div class="container">
+        <div class="hero-grid">
+          
+          <div class="hero-text-col">
+            <div class="hero-pill-badge">
+              <span class="pulse-dot"></span>
+              <span class="hero-pill-text"><strong>C-Slot v0.1.0</strong> • Free & Open Source for Windows 10 & 11</span>
+            </div>
+
+            <h1 class="hero-title">
+              Stop Context Switching. <br>
+              <span class="gradient-text">Copy 9 Things.</span> <br>
+              <span class="gradient-cyan">Paste Any Slot.</span>
+            </h1>
+
+            <p class="hero-subtitle">
+              C-Slot turns your Windows clipboard into a lighting-fast 9-slot volatile buffer. Copy consecutively with <kbd>Ctrl</kbd>+<kbd>C</kbd>, then paste any slot on-demand with <kbd>Ctrl</kbd>+<kbd>1</kbd>–<kbd>9</kbd>. Direct Win32 C++ keystrokes, zero window juggling, 100% RAM privacy.
+            </p>
+
+            <div class="hero-ctas">
+              <a href="#downloads" class="btn btn-primary btn-lg btn-download-setup" id="heroPrimaryDownloadBtn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <!-- Windows Logo -->
+                  <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+                </svg>
+                <div class="cta-subtext">
+                  <span>Download Setup</span>
+                  <span class="cta-meta">v0.1.0 • Windows x64 (106 MB)</span>
+                </div>
+              </a>
+
+              <a href="#downloads" class="btn btn-secondary btn-lg btn-download-portable" id="heroPortableDownloadBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 16V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12m16 0-4 4m4-4-4-4M4 16l4 4m-4-4 4-4"/>
+                </svg>
+                <div class="cta-subtext">
+                  <span>Portable (.exe)</span>
+                  <span class="cta-meta">Zero Install • Run Anywhere</span>
+                </div>
+              </a>
+            </div>
+
+            <div class="hero-specs-row">
+              <div class="spec-chip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Win32 Native Keystrokes</span>
+              </div>
+              <div class="spec-chip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Multi-Monitor Aware</span>
+              </div>
+              <div class="spec-chip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>100% Volatile RAM (No Disk)</span>
+              </div>
+              <div class="spec-chip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Dual Numpad & Number Row</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================
+               INTERACTIVE SIMULATOR (THE REAL EXPERIENCE)
+               ================================================================ -->
+          <div class="hero-sim-col" id="simulator">
+            <div class="simulator-card">
+              
+              <div class="simulator-header">
+                <div class="window-dots">
+                  <span class="dot dot-red"></span>
+                  <span class="dot dot-yellow"></span>
+                  <span class="dot dot-green"></span>
+                </div>
+                <div class="sim-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 9h6"/></svg>
+                  <span>Interactive HUD Sandbox</span>
+                </div>
+                <div class="sim-live-badge">
+                  <span class="pulse-dot" style="width:6px;height:6px;"></span>
+                  <span>Interactive</span>
+                </div>
+              </div>
+
+              <div class="sim-body">
+                
+                <!-- Simulated Electron HUD Window -->
+                <div class="hud-preview" id="hudPreview">
+                  <div class="hud-head">
+                    <div class="hud-brand">
+                      <img src="assets/icon.png" alt="icon">
+                      <span>C-Slot</span>
+                    </div>
+                    <span class="hud-status" id="hudStatus">Active</span>
+                  </div>
+                  
+                  <ul class="hud-slots-list" id="hudList">
+                    <!-- Dynamic slots populated by app.js -->
+                  </ul>
+                </div>
+
+                <!-- Workbench / Target Console -->
+                <div class="sim-workbench">
+                  
+                  <!-- Click to Push into Buffer -->
+                  <div class="workbench-card">
+                    <div class="workbench-title">
+                      <span>1. Copy Test Data into Buffer</span>
+                      <span style="font-size: 0.7rem; font-weight: 500; color: var(--text-muted);">Click chip to copy</span>
+                    </div>
+
+                    <div class="samples-rack">
+                      <button type="button" class="sample-chip" data-value="const api = new CSlotClient({ speed: 'sub-ms' });">const api = ...</button>
+                      <button type="button" class="sample-chip" data-value="SAMPLE_API_TOKEN_99480102b48fe2772">API Key</button>
+                      <button type="button" class="sample-chip" data-value="SELECT * FROM users WHERE active = 1;">SQL Query</button>
+                      <button type="button" class="sample-chip" data-value="#38bdf8">#38bdf8 (Cyan)</button>
+                      <button type="button" class="sample-chip" data-value="contact@mdruwaid.dev">Email</button>
+                    </div>
+
+                    <form id="simAddForm" class="sim-input-row">
+                      <input type="text" id="simCustomInput" class="sim-input" placeholder="Type custom text and press Enter..." autocomplete="off">
+                      <button type="submit" class="btn btn-secondary btn-sm" id="simAddBtn">Copy</button>
+                    </form>
+                  </div>
+
+                  <!-- Simulated Target Document -->
+                  <div class="workbench-card" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="workbench-title">
+                      <span>2. Active Document Output</span>
+                      <div class="sim-kbd-hint">
+                        <span>Click slot or press</span> <kbd>1</kbd>–<kbd>9</kbd>
+                      </div>
+                    </div>
+
+                    <div class="sim-editor" id="simEditorBody">
+                      <div class="sim-editor-line">
+                        <span class="line-no">0</span>
+                        <span class="line-text" style="color: #64748b;">// Target window: Click any slot on the left or press 1-9 to paste</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Simulator Controls -->
+                  <div class="sim-controls-row">
+                    <button type="button" class="btn btn-ghost btn-sm" id="simToggleState" title="Simulate Ctrl+Alt+0">
+                      Active (HUD On)
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" id="simClearBtn" title="Simulate Ctrl+Alt+.">
+                      Clear Slots (<kbd>Ctrl+Alt+.</kbd>)
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         FEATURES SECTION (BENTO GRID)
+         ==================================================================== -->
+    <section class="section" id="features">
+      <div class="container">
+        
+        <div class="section-head">
+          <span class="section-tag">Engineered for Velocity</span>
+          <h2 class="section-title">Designed for Power Users Who Value Every Millisecond</h2>
+          <p class="section-desc">
+            Traditional clipboards force you into tedious window-switching cycles. C-Slot eliminates the cognitive friction by transforming repetitive copy-paste into rapid-fire muscle memory.
+          </p>
+        </div>
+
+        <div class="bento-grid">
+          
+          <!-- Bento 1 -->
+          <div class="bento-card span-2">
+            <div class="bento-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <h3 class="bento-title">Sub-Millisecond Native Keystrokes via Win32</h3>
+            <p class="bento-text">
+              Under the hood, C-Slot binds directly to Windows <code>user32.dll</code> via high-performance C++ foreign function interface (<code>koffi</code>). It inspects modifier states in real-time with <code>GetAsyncKeyState</code> and simulates instantaneous <code>keybd_event</code> keystrokes with zero lag.
+            </p>
+          </div>
+
+          <!-- Bento 2 -->
+          <div class="bento-card">
+            <div class="bento-icon purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <h3 class="bento-title">Multi-Monitor Aware</h3>
+            <p class="bento-text">
+              Working with 2, 3, or 4 displays? C-Slot reads your exact cursor coordinates and pops up smoothly in the bottom-right corner of whichever monitor your eyes are currently on.
+            </p>
+          </div>
+
+          <!-- Bento 3 -->
+          <div class="bento-card">
+            <div class="bento-icon emerald">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3 class="bento-title">100% Volatile RAM Isolation</h3>
+            <p class="bento-text">
+              Your copied passwords, API keys, and sensitive documents never touch your hard drive. Slots live exclusively in volatile RAM memory and disappear when you quit or clear them. Zero network calls, zero telemetry, zero logging.
+            </p>
+          </div>
+
+          <!-- Bento 4 -->
+          <div class="bento-card span-2">
+            <div class="bento-icon indigo">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="M6 8h.001"/><path d="M10 8h.001"/><path d="M14 8h.001"/><path d="M18 8h.001"/>
+                <path d="M8 12h.001"/><path d="M12 12h.001"/><path d="M16 12h.001"/>
+                <path d="M7 16h10"/>
+              </svg>
+            </div>
+            <h3 class="bento-title">Universal Dual-Key Architecture</h3>
+            <p class="bento-text">
+              Whether you're on a compact ultrabook with only a top number row or at a mechanical desktop workstation with a dedicated Numpad, C-Slot binds to both simultaneously (<kbd>Ctrl</kbd>+<kbd>1</kbd>–<kbd>9</kbd> and <kbd>Ctrl</kbd>+<kbd>Num 1</kbd>–<kbd>Num 9</kbd>).
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         WORKFLOW COMPARISON
+         ==================================================================== -->
+    <section class="section" id="comparison">
+      <div class="container">
+        
+        <div class="section-head">
+          <span class="section-tag">Productivity Multiplier</span>
+          <h2 class="section-title">The Real Impact on Your Daily Flow</h2>
+          <p class="section-desc">
+            See how much mental overhead and window-cycling you save when filling out spreadsheets, forms, database migrations, or code snippets.
+          </p>
+        </div>
+
+        <div class="comparison-container">
+          
+          <!-- Bad Way -->
+          <div class="comp-card bad">
+            <div class="comp-header">
+              <h3 class="comp-title">The Old Way</h3>
+              <span class="comp-badge bad">18 Window Switches</span>
+            </div>
+
+            <ul class="comp-steps">
+              <li class="comp-step bad">
+                <span class="step-num">1</span>
+                <span>Select first item in source window and press <kbd>Ctrl+C</kbd></span>
+              </li>
+              <li class="comp-step bad">
+                <span class="step-num">2</span>
+                <span>Press <kbd>Alt+Tab</kbd> to find target document</span>
+              </li>
+              <li class="comp-step bad">
+                <span class="step-num">3</span>
+                <span>Paste with <kbd>Ctrl+V</kbd></span>
+              </li>
+              <li class="comp-step bad">
+                <span class="step-num">4</span>
+                <span>Press <kbd>Alt+Tab</kbd> back to source window</span>
+              </li>
+              <li class="comp-step bad">
+                <span class="step-num">5</span>
+                <span>Repeat this exhausting cycle 8 more times...</span>
+              </li>
+            </ul>
+
+            <div class="comp-metric">
+              <span class="metric-label">Estimated Time for 9 items:</span>
+              <span class="metric-val bad">~45 Seconds</span>
+            </div>
+          </div>
+
+          <!-- Good Way (C-Slot) -->
+          <div class="comp-card good">
+            <div class="comp-header">
+              <h3 class="comp-title">The C-Slot Way</h3>
+              <span class="comp-badge good">Only 1 Window Switch</span>
+            </div>
+
+            <ul class="comp-steps">
+              <li class="comp-step good">
+                <span class="step-num">1</span>
+                <span>Highlight and copy all 9 items in sequence: <kbd>Ctrl+C</kbd>, <kbd>Ctrl+C</kbd>...</span>
+              </li>
+              <li class="comp-step good">
+                <span class="step-num">2</span>
+                <span>Press <kbd>Alt+Tab</kbd> once to your destination window</span>
+              </li>
+              <li class="comp-step good">
+                <span class="step-num">3</span>
+                <span>Paste each slot instantaneously: <kbd>Ctrl+1</kbd>, <kbd>Ctrl+2</kbd>, <kbd>Ctrl+3</kbd>...</span>
+              </li>
+              <li class="comp-step good">
+                <span class="step-num">4</span>
+                <span>Done! Your original active clipboard remains protected.</span>
+              </li>
+            </ul>
+
+            <div class="comp-metric">
+              <span class="metric-label">Estimated Time for 9 items:</span>
+              <span class="metric-val good">~7 Seconds (84% Faster)</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         HOTKEY MATRIX
+         ==================================================================== -->
+    <section class="section" id="hotkeys">
+      <div class="container">
+        
+        <div class="section-head">
+          <span class="section-tag">Ergonomic Controls</span>
+          <h2 class="section-title">Zero Guesswork. Clean Muscle Memory.</h2>
+          <p class="section-desc">
+            Designed to fit naturally into your keyboard hand positions. Click any key on the interactive numpad below to test it.
+          </p>
+        </div>
+
+        <div class="hotkey-showcase">
+          <div class="keys-interactive-grid">
+            
+            <!-- Hotkey Table -->
+            <div>
+              <table class="hotkeys-table">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Shortcut</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Copy to Next Slot</strong></td>
+                    <td><kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>X</kbd></td>
+                    <td>Auto-rotates sequentially through buffer slots 1–9</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Paste Slot 1–9</strong></td>
+                    <td><kbd>Ctrl</kbd> + <kbd>1</kbd> – <kbd>9</kbd></td>
+                    <td>Sub-millisecond paste from specific slot (top number row)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Paste Numpad 1–9</strong></td>
+                    <td><kbd>Ctrl</kbd> + <kbd>Num 1</kbd> – <kbd>Num 9</kbd></td>
+                    <td>Rapid one-handed pasting on full desktop keyboards</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Toggle Active / Pause</strong></td>
+                    <td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>0</kbd></td>
+                    <td>Temporarily suspends clipboard capture & shortcuts</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Wipe All 9 Slots</strong></td>
+                    <td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>.</kbd></td>
+                    <td>Instantly clears RAM buffer back to empty state</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Interactive Numpad Visualizer -->
+            <div>
+              <div class="numpad-viz">
+                <button type="button" class="key-cap" data-key="7" title="Ctrl + 7"><span class="key-cap-num">7</span><span class="key-cap-sub">Slot 7</span></button>
+                <button type="button" class="key-cap" data-key="8" title="Ctrl + 8"><span class="key-cap-num">8</span><span class="key-cap-sub">Slot 8</span></button>
+                <button type="button" class="key-cap" data-key="9" title="Ctrl + 9"><span class="key-cap-num">9</span><span class="key-cap-sub">Slot 9</span></button>
+                <button type="button" class="key-cap" data-key="4" title="Ctrl + 4"><span class="key-cap-num">4</span><span class="key-cap-sub">Slot 4</span></button>
+                <button type="button" class="key-cap" data-key="5" title="Ctrl + 5"><span class="key-cap-num">5</span><span class="key-cap-sub">Slot 5</span></button>
+                <button type="button" class="key-cap" data-key="6" title="Ctrl + 6"><span class="key-cap-num">6</span><span class="key-cap-sub">Slot 6</span></button>
+                <button type="button" class="key-cap" data-key="1" title="Ctrl + 1"><span class="key-cap-num">1</span><span class="key-cap-sub">Slot 1</span></button>
+                <button type="button" class="key-cap" data-key="2" title="Ctrl + 2"><span class="key-cap-num">2</span><span class="key-cap-sub">Slot 2</span></button>
+                <button type="button" class="key-cap" data-key="3" title="Ctrl + 3"><span class="key-cap-num">3</span><span class="key-cap-sub">Slot 3</span></button>
+              </div>
+              <p style="text-align: center; margin-top: 12px; font-size: 0.78rem; color: var(--text-muted);">
+                Click any key to simulate paste into the sandbox
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         DOWNLOAD HUB SECTION (THE CORE GOAL)
+         ==================================================================== -->
+    <section class="download-section" id="downloads">
+      <div class="container">
+        
+        <div class="section-head">
+          <span class="section-tag">Ready in Seconds</span>
+          <h2 class="section-title">Download C-Slot for Windows</h2>
+          <p class="section-desc">
+            Choose between the standard Windows installer with Start Menu integration or the zero-install portable executable.
+          </p>
+        </div>
+
+        <div class="download-cards-grid">
+          
+          <!-- Card 1: Setup Installer -->
+          <div class="download-card featured">
+            <span class="featured-ribbon">Recommended</span>
+            
+            <div class="dl-card-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+              </svg>
+            </div>
+
+            <h3 class="dl-card-title">Windows Setup Installer</h3>
+            <p class="dl-card-desc">
+              Standard NSIS package for Windows 10 & 11 (64-bit). Sets up desktop and start menu shortcuts with seamless clean uninstallation.
+            </p>
+
+            <ul class="dl-meta-list">
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>File: <strong>Ctrl Slot Setup 0.1.0.exe</strong></span>
+              </li>
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Size: <strong>106.4 MB</strong></span>
+              </li>
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>System: <strong>Windows 10 / 11 (x64)</strong></span>
+              </li>
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Clean Windows Add / Remove Programs Support</span>
+              </li>
+            </ul>
+
+            <a href="/download/setup" class="btn btn-primary btn-lg btn-download-setup" id="dlSetupBtn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download Setup (.exe)</span>
+            </a>
+
+            <div class="dl-hash-box">
+              <span class="hash-string" title="SHA-256: 246D96D7027B145B03812D2FC829854396C0D27652E7C8582CAC84E564526959">
+                SHA256: 246D96D7027B14...
+              </span>
+              <button type="button" class="hash-copy-btn" data-hash="246D96D7027B145B03812D2FC829854396C0D27652E7C8582CAC84E564526959" title="Copy SHA-256 Hash">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span style="font-size:0.7rem; margin-left:4px;">Copy</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Portable Edition -->
+          <div class="download-card">
+            <div class="dl-card-icon" style="color: var(--accent-purple);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 16V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12m16 0-4 4m4-4-4-4M4 16l4 4m-4-4 4-4"/>
+              </svg>
+            </div>
+
+            <h3 class="dl-card-title">Portable Edition</h3>
+            <p class="dl-card-desc">
+              Zero-install standalone binary. Drop it anywhere, run from a USB drive, or use on restricted work machines without administrator privileges.
+            </p>
+
+            <ul class="dl-meta-list">
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>File: <strong>Ctrl Slot-Portable.exe</strong></span>
+              </li>
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Size: <strong>106.2 MB</strong></span>
+              </li>
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>No Installation / Registry Changes</span>
+              </li>
+              <li class="dl-meta-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Perfect for USB Thumb Drives</span>
+              </li>
+            </ul>
+
+            <a href="/download/portable" class="btn btn-secondary btn-lg btn-download-portable" id="dlPortableBtn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download Portable (.exe)</span>
+            </a>
+
+            <div class="dl-hash-box">
+              <span class="hash-string" title="SHA-256: 91EFAE74F16999FBB1EDD9A508B5B88A41D2F2232A23B6755D9877CA8CCC9A5D">
+                SHA256: 91EFAE74F16999...
+              </span>
+              <button type="button" class="hash-copy-btn" data-hash="91EFAE74F16999FBB1EDD9A508B5B88A41D2F2232A23B6755D9877CA8CCC9A5D" title="Copy SHA-256 Hash">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span style="font-size:0.7rem; margin-left:4px;">Copy</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- System Requirements Strip -->
+        <div class="system-reqs-bar">
+          <div class="req-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <div class="req-item-text">
+              <strong>Operating System</strong>
+              <span>Windows 10 (1809+) or Windows 11</span>
+            </div>
+          </div>
+
+          <div class="req-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 19v-3"/><path d="M10 19v-3"/><path d="M14 19v-3"/><path d="M18 19v-3"/><path d="M6 5v3"/><path d="M10 5v3"/><path d="M14 5v3"/><path d="M18 5v3"/><rect x="2" y="8" width="20" height="8" rx="2"/></svg>
+            <div class="req-item-text">
+              <strong>RAM Footprint</strong>
+              <span>~25 MB idle in memory</span>
+            </div>
+          </div>
+
+          <div class="req-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            <div class="req-item-text">
+              <strong>Disk Space</strong>
+              <span>120 MB free space</span>
+            </div>
+          </div>
+
+          <div class="req-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="req-item-text">
+              <strong>Privacy</strong>
+              <span>100% Offline (Zero Network)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Step Installation Guide -->
+        <div class="install-guide">
+          <h3 style="font-size: 1.35rem; font-weight: 800;">Get Started in 3 Simple Steps</h3>
+          
+          <div class="install-steps">
+            <div class="install-step-card">
+              <span class="step-badge">1</span>
+              <h4>Download the Executable</h4>
+              <p>Click the setup or portable download button above. The binary will download directly to your computer.</p>
+            </div>
+
+            <div class="install-step-card">
+              <span class="step-badge">2</span>
+              <h4>Launch C-Slot</h4>
+              <p>Double-click the file to open. C-Slot starts quietly in your Windows system tray ready to capture.</p>
+            </div>
+
+            <div class="install-step-card">
+              <span class="step-badge">3</span>
+              <h4>Copy with Ctrl+C, Paste 1–9</h4>
+              <p>Copy multiple items consecutively. When ready to paste, simply press <kbd>Ctrl</kbd> + <kbd>1</kbd> through <kbd>9</kbd>!</p>
+            </div>
+          </div>
+
+          <!-- Windows SmartScreen Open-Source Notice -->
+          <div class="smartscreen-notice">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div>
+              <strong>Windows SmartScreen on First Launch:</strong><br>
+              Because C-Slot is a free, open-source project without an expensive ($400/yr) commercial EV code signing certificate, Windows Defender SmartScreen may display: <em>"Windows protected your PC"</em>. Simply click <strong>"More info"</strong> and then <strong>"Run anyway"</strong>. You can verify the source code and build instructions publicly on <a href="https://github.com/Md-Ruwaid/Ctrl-slot" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: underline;">GitHub</a>.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         FAQ SECTION
+         ==================================================================== -->
+    <section class="section" id="faq">
+      <div class="container">
+        
+        <div class="section-head">
+          <span class="section-tag">Got Questions?</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+          <p class="section-desc">
+            Everything you need to know about safety, privacy, hotkey conflicts, and setup.
+          </p>
+        </div>
+
+        <div class="faq-list">
+          
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Is C-Slot safe? Does it store my passwords or sensitive data?</span>
+              <span class="faq-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <p>Yes, 100% safe. C-Slot is completely open-source under the MIT license. Clipboard slots live strictly in volatile computer memory (RAM). Nothing is ever saved to your disk, database, or external servers. C-Slot has zero telemetry, zero analytics, and zero outbound network connections.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Do I need a keyboard with a dedicated Numpad?</span>
+              <span class="faq-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <p>No! C-Slot binds both the top number row (<kbd>Ctrl+1</kbd> to <kbd>Ctrl+9</kbd>) and the dedicated Numpad (<kbd>Ctrl+Num 1</kbd> to <kbd>Ctrl+Num 9</kbd>) simultaneously. You can use whichever is convenient on your laptop or mechanical keyboard.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Does C-Slot interfere with standard Windows Clipboard History (Win + V)?</span>
+              <span class="faq-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <p>Not at all! Windows Clipboard History (<kbd>Win+V</kbd>) continues to operate normally. C-Slot provides a parallel, faster 9-slot fast buffer designed for instantaneous direct pasting without having to scroll or navigate UI menus.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How do I temporarily pause C-Slot?</span>
+              <span class="faq-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <p>Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>0</kbd> (or <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Num 0</kbd>) at any time to toggle C-Slot paused or active. When paused, global hotkeys are released and the clipboard watcher stops recording.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How do I clear or reset the 9 slots?</span>
+              <span class="faq-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <p>Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>.</kbd> (period or numpad decimal) or click "Clear All" from the Windows system tray icon right-click menu.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================================
+       DOWNLOAD MODAL
+       ==================================================================== -->
+  <div class="modal-overlay" id="downloadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close dialog">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <div class="modal-success-badge">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+
+      <h3 class="modal-title" id="modalTitle">Your Download Has Started!</h3>
+      <p class="modal-desc">
+        Thank you for downloading <strong id="modalDlType" style="color:var(--accent-cyan);">C-Slot Setup</strong>. If the download did not start automatically, <a href="/download/setup" class="btn-download-setup" style="color:var(--accent-cyan); text-decoration:underline;">click here to retry</a>.
+      </p>
+
+      <ul class="modal-tips-list">
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>If Windows SmartScreen warns on first launch, click <strong>"More info" &rarr; "Run anyway"</strong>.</span>
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>C-Slot will run in your Windows system tray.</span>
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Copy with <kbd>Ctrl+C</kbd> and paste slots with <kbd>Ctrl+1..9</kbd>!</span>
+        </li>
+      </ul>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('downloadModal').classList.remove('active');">
+          Got It, Thanks!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="alert">
+    <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="toastMsg">Action complete</span>
+  </div>
+
+  <!-- ====================================================================
+       FOOTER
+       ==================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      
+      <div class="footer-top">
+        <div class="footer-brand-info">
+          <div class="brand">
+            <div class="brand-logo-wrap" style="width:28px;height:28px;">
+              <img src="assets/icon.png" alt="C-Slot" class="brand-logo">
+            </div>
+            <span class="brand-text" style="font-size:1.1rem;">C-Slot</span>
+          </div>
+          <p>
+            Minimalist, ultra-fast 9-slot clipboard buffer for Windows 10 and 11. Designed to keep developers and writers in their cognitive flow state.
+          </p>
+        </div>
+
+        <div class="footer-links-group">
+          <div class="footer-col">
+            <h5>Navigation</h5>
+            <ul>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#simulator">Live Sandbox</a></li>
+              <li><a href="#hotkeys">Hotkey Guide</a></li>
+              <li><a href="#downloads">Download .exe</a></li>
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h5>Downloads</h5>
+            <ul>
+              <li><a href="/download/setup" class="btn-download-setup">Windows Installer (.exe)</a></li>
+              <li><a href="/download/portable" class="btn-download-portable">Portable Version (.exe)</a></li>
+              <li><a href="https://github.com/Md-Ruwaid/Ctrl-slot/releases" target="_blank" rel="noopener noreferrer">Release Notes & History</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h5>Open Source</h5>
+            <ul>
+              <li><a href="https://github.com/Md-Ruwaid/Ctrl-slot" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+              <li><a href="https://github.com/Md-Ruwaid/Ctrl-slot/issues" target="_blank" rel="noopener noreferrer">Issue Tracker</a></li>
+              <li><a href="https://github.com/Md-Ruwaid/Ctrl-slot/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          &copy; 2026 C-Slot. Open source under the MIT License. Developed with care by <strong>Md Ruwaid uddin</strong>.
+        </div>
+        <div>
+          <a href="#hero">Back to Top &uarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
